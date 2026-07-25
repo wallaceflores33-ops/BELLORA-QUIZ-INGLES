@@ -62,7 +62,8 @@
   .loading-bar-outer{background:#eee;height:10px;border-radius:6px;overflow:hidden;margin:18px 0;}
   .loading-bar-inner{height:100%;background:var(--brand);width:0%;transition:width .3s linear;}
   .result-card{display:flex;gap:16px;background:#fff;border-radius:16px;padding:16px;border:1px solid #eee;margin-bottom:18px;align-items:center;}
-  .result-icon{width:90px;height:90px;border-radius:14px;flex-shrink:0;background:linear-gradient(160deg,#c9ece6,#5cc0ac);display:flex;align-items:center;justify-content:center;font-size:40px;}
+  .result-icon{width:90px;height:90px;border-radius:14px;flex-shrink:0;background:linear-gradient(160deg,#c9ece6,#5cc0ac);display:flex;align-items:center;justify-content:center;font-size:40px;overflow:hidden;}
+  .result-icon img{width:100%;height:100%;object-fit:cover;display:block;}
   .result-msg{background:#fdeceb;border:1px solid #f6c9c6;border-radius:12px;padding:12px;font-size:13px;color:#a13a35;font-weight:600;}
   .stat-row{display:flex;gap:10px;margin-bottom:18px;}
   .stat{flex:1;background:#fff;border:1px solid #eee;border-radius:14px;padding:12px 8px;text-align:center;}
@@ -132,7 +133,7 @@ const TXT = {
   loading1Sub:"One moment, building your overview...",
   resultTitle:"Your Bellora overview 🌱",
   resultSub:"Based on what you answered:",
-  resultMsg:"The pattern you described is common in routines with low water intake, irregular sleep and rushed meals — factors that tend to weigh on digestive comfort.",
+  resultMsg:"This pattern is really common — and the good news is it responds well to small adjustments in water, sleep and meals. Your body isn't broken, it just needs the right nudge.",
   stat1:"63%", stat1lbl:"Reported bloating by end of day",
   stat2:"71%", stat2lbl:"Sleep less than 6h a night",
   stat3:"84%", stat3lbl:"Noticed improvement after adjusting habits",
@@ -141,9 +142,9 @@ const TXT = {
   loading2Title:"Building your personalized ritual",
   loading2Sub:"Cross-checking age range, symptoms and routine...",
   finalTitle:"Your ritual is ready! 🌿",
-  finalBody:"Next step: check out the full Bellora Ritual — the details page opens next.",
-  finalCta:"See my ritual now",
-  finalNote:"[LINK TO PRESENTATION PAGE / CHECKOUT]"
+  finalBody:"Based on your answers, your 7-day ritual is already built — with a ready-to-follow meal plan, daily checklist and the right bonuses for your profile. The next screen shows you everything in detail.",
+  finalCta:"I want to see my ritual now",
+  finalNote:"🔒 Takes less than 1 minute to access"
 };
 
 let stepIndex = 0;
@@ -221,13 +222,15 @@ function render(){
   else if(step.type==="testimonials"){
     html += `<h1 class="qtitle">${step.q}</h1>`;
     const testis = [
-      ["Rachel M.","I followed the ritual for 7 days and the biggest change was my energy in the afternoons."],
-      ["Devon A.","I liked how simple it was. It's not a diet, it's a routine — that's what made me stick with it."]
+      ["Rachel M.","I followed the ritual for 7 days and the biggest change was my energy in the afternoons.","https://images.pexels.com/photos/5257621/pexels-photo-5257621.jpeg?auto=compress&cs=tinysrgb&w=100"],
+      ["Devon A.","I liked how simple it was. It's not a diet, it's a routine — that's what made me stick with it.","https://images.pexels.com/photos/4450128/pexels-photo-4450128.jpeg?auto=compress&cs=tinysrgb&w=100"],
+      ["Camila S.","I didn't cut anything out of guilt, just adjusted timing and water. Within a week I was sleeping better and waking up without that heavy feeling.","https://images.pexels.com/photos/31850123/pexels-photo-31850123.jpeg?auto=compress&cs=tinysrgb&w=100"],
+      ["Julia P.","The checklist is what got me. Every time I wanted to quit, I'd look at it and see how far I'd already come.","https://images.pexels.com/photos/34851867/pexels-photo-34851867.jpeg?auto=compress&cs=tinysrgb&w=100"]
     ];
     testis.forEach(t=>{
       html += `<div style="background:#0e2b27;border-radius:16px;padding:16px;margin-bottom:14px;color:#fff;">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
-          <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#5cc0ac,#12a696);display:flex;align-items:center;justify-content:center;font-weight:700;">${t[0][0]}</div>
+          <div style="width:36px;height:36px;border-radius:50%;overflow:hidden;flex-shrink:0;"><img src="${t[2]}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;"></div>
           <div><div style="font-weight:700;font-size:14px;">${t[0]}</div><div style="font-size:11px;color:#8fd;">testimonial</div></div>
         </div>
         <div style="background:#153e38;border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.5;">${t[1]}</div>
@@ -241,7 +244,7 @@ function render(){
   }
   else if(step.type==="resultDiag"){
     html += `<h1 class="qtitle">${TXT.resultTitle}</h1><p class="qsub">${TXT.resultSub}</p>`;
-    html += `<div class="result-card"><div class="result-icon">🌿</div><div class="result-msg">${TXT.resultMsg}</div></div>`;
+    html += `<div class="result-card"><div class="result-icon"><img src="https://images.pexels.com/photos/20897124/pexels-photo-20897124.jpeg?auto=compress&cs=tinysrgb&w=200" alt=""></div><div class="result-msg">${TXT.resultMsg}</div></div>`;
     html += `<div class="stat-row">
       <div class="stat"><span class="pct">${TXT.stat1}</span><div class="bar-mini"><i style="height:${TXT.stat1};background:#e8735f;"></i></div><span class="lbl">${TXT.stat1lbl}</span></div>
       <div class="stat"><span class="pct">${TXT.stat2}</span><div class="bar-mini"><i style="height:${TXT.stat2};background:#e0a83c;"></i></div><span class="lbl">${TXT.stat2lbl}</span></div>
@@ -256,7 +259,7 @@ function render(){
   else if(step.type==="final"){
     html += `<h1 class="qtitle">${TXT.finalTitle}</h1>`;
     html += `<div class="info-block">${TXT.finalBody}</div>`;
-    html += `<button class="cta" onclick="window.location.href='bellora-sales-en.html'">${TXT.finalCta}</button>`;
+    html += `<button class="cta" onclick="window.location.href='https://chk.eduzz.com/poy2uoic'">${TXT.finalCta}</button>`;
     html += `<p class="small-note">${TXT.finalNote}</p>`;
   }
 
