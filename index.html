@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Bellora — 7-Day Ritual</title>
+<style>
+  :root{
+    --brand-dark:#0b6b63;
+    --brand:#12a696;
+    --brand-light:#e4f6f3;
+    --coral:#e8735f;
+    --text:#1c3a36;
+    --bg:#faf9f6;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--text);display:flex;justify-content:center;}
+  #app{width:100%;max-width:640px;padding:24px 20px 60px;min-height:100vh;}
+  .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+  .logo{display:flex;align-items:center;gap:8px;font-weight:800;color:var(--brand-dark);font-size:15px;letter-spacing:.5px;}
+  .logo-mark{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));display:flex;align-items:center;justify-content:center;font-size:15px;}
+  .back-btn{background:none;border:none;cursor:pointer;font-size:20px;color:var(--text);padding:4px;visibility:hidden;}
+  .back-btn.show{visibility:visible;}
+  .progress-outer{background:#e3e3e3;height:8px;border-radius:6px;overflow:hidden;margin:18px 0 28px;}
+  .progress-inner{height:100%;background:var(--brand);border-radius:6px;transition:width .4s ease;}
+  h1.qtitle{font-size:22px;line-height:1.3;text-align:center;margin:0 0 6px;}
+  h1.qtitle .hl{color:var(--brand);}
+  p.qsub{text-align:center;color:#5a6b68;font-size:14px;margin:0 0 22px;}
+  .options{display:flex;flex-direction:column;gap:12px;}
+  .opt{display:flex;align-items:center;gap:14px;background:var(--brand-light);border:1px solid #c9ece6;border-radius:16px;padding:14px 16px;cursor:pointer;font-size:15px;font-weight:600;transition:.15s;}
+  .opt:hover{background:#d3f0ea;}
+  .opt .emoji{font-size:22px;width:26px;text-align:center;}
+  .opt .arrow{margin-left:auto;width:26px;height:26px;border-radius:50%;border:1.5px solid var(--brand);display:flex;align-items:center;justify-content:center;color:var(--brand);flex-shrink:0;}
+  .opt.checkbox .box{width:20px;height:20px;border:2px solid var(--brand);border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+  .opt.checkbox.selected .box{background:var(--brand);color:#fff;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .card{background:var(--brand-light);border:2px solid transparent;border-radius:16px;padding:10px;text-align:center;cursor:pointer;font-weight:700;font-size:13px;}
+  .card.selected{border-color:var(--brand);}
+  .card .imgbox{width:100%;aspect-ratio:1/1;border-radius:12px;background:linear-gradient(160deg,#c9ece6,#7fd2c2);margin-bottom:8px;display:flex;align-items:center;justify-content:center;font-size:34px;overflow:hidden;}
+  .card .imgbox img{width:100%;height:100%;object-fit:cover;display:block;}
+  .qimage{width:100%;max-height:320px;object-fit:cover;border-radius:16px;margin-bottom:18px;display:block;}
+  .cta{display:block;width:100%;background:var(--brand);color:#fff;border:none;border-radius:16px;padding:16px;font-size:16px;font-weight:700;cursor:pointer;margin-top:20px;box-shadow:0 6px 0 var(--brand-dark);}
+  .cta:active{transform:translateY(3px);box-shadow:0 3px 0 var(--brand-dark);}
+  .cta:disabled{opacity:.45;cursor:not-allowed;box-shadow:none;}
+  .field-row{display:flex;gap:10px;margin-bottom:14px;}
+  input.textfield{width:100%;padding:16px;border-radius:14px;border:1px solid #d8d8d8;font-size:15px;}
+  .info-block{background:var(--brand-light);border-radius:16px;padding:18px;font-size:15px;line-height:1.55;margin-bottom:18px;}
+  .chart{background:#fff;border-radius:16px;padding:20px;margin-bottom:18px;border:1px solid #eee;}
+  .bars{display:flex;align-items:flex-end;gap:6px;height:130px;}
+  .bars .bar{flex:1;border-radius:6px 6px 0 0;background:linear-gradient(180deg,#7fd2c2,var(--brand));}
+  .chart-caption{text-align:center;font-size:12px;font-weight:700;margin-top:8px;color:var(--brand-dark);}
+  table.cmp{width:100%;border-collapse:collapse;border-radius:14px;overflow:hidden;margin-bottom:18px;}
+  table.cmp th{padding:12px 8px;font-size:13px;text-align:center;color:#fff;}
+  table.cmp th.bad{background:var(--coral);}
+  table.cmp th.good{background:var(--brand);}
+  table.cmp td{padding:12px 10px;font-size:13px;text-align:center;border-bottom:1px solid #eee;}
+  table.cmp td.bad{background:#fbe9e5;}
+  table.cmp td.good{background:#dff5f0;}
+  .step-loading{text-align:center;padding:60px 10px;}
+  .spinner{width:56px;height:56px;border-radius:50%;border:5px solid var(--brand-light);border-top-color:var(--brand);margin:0 auto 22px;animation:spin 1s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .loading-bar-outer{background:#eee;height:10px;border-radius:6px;overflow:hidden;margin:18px 0;}
+  .loading-bar-inner{height:100%;background:var(--brand);width:0%;transition:width .3s linear;}
+  .result-card{display:flex;gap:16px;background:#fff;border-radius:16px;padding:16px;border:1px solid #eee;margin-bottom:18px;align-items:center;}
+  .result-icon{width:90px;height:90px;border-radius:14px;flex-shrink:0;background:linear-gradient(160deg,#c9ece6,#5cc0ac);display:flex;align-items:center;justify-content:center;font-size:40px;}
+  .result-msg{background:#fdeceb;border:1px solid #f6c9c6;border-radius:12px;padding:12px;font-size:13px;color:#a13a35;font-weight:600;}
+  .stat-row{display:flex;gap:10px;margin-bottom:18px;}
+  .stat{flex:1;background:#fff;border:1px solid #eee;border-radius:14px;padding:12px 8px;text-align:center;}
+  .stat .pct{font-weight:800;font-size:15px;margin-bottom:8px;display:block;}
+  .stat .bar-mini{width:14px;height:60px;border-radius:6px;background:#eee;margin:0 auto 8px;position:relative;overflow:hidden;}
+  .stat .bar-mini i{position:absolute;bottom:0;left:0;width:100%;display:block;border-radius:6px;}
+  .stat .lbl{font-size:11px;color:#556;}
+  .footer-disclaimer{text-align:center;font-size:11px;color:#93a29d;margin-top:28px;line-height:1.5;}
+  .small-note{font-size:12px;color:#7a8b86;text-align:center;margin-top:6px;}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="topbar">
+    <button class="back-btn" id="backBtn" onclick="goBack()">←</button>
+    <div class="logo"><div class="logo-mark">🌱</div><span>BELLORA</span></div>
+    <div style="width:30px;"></div>
+  </div>
+  <div class="progress-outer"><div class="progress-inner" id="progressBar" style="width:5%"></div></div>
+  <div id="stepContainer"></div>
+  <div class="footer-disclaimer">Educational content about habits and wellness. Not a substitute for medical or nutritional advice. Individual results vary.</div>
+</div>
+
+<script>
+const STEPS = [
+ {type:"choice", title:"Quick digestive wellness check", sub:"Takes less than 2 minutes", q:"By the end of the day, is your belly usually more bloated than in the morning?", image:"https://images.pexels.com/photos/9486633/pexels-photo-9486633.jpeg?auto=compress&cs=tinysrgb&w=700", options:[{e:"✅",t:"Yes, almost every day"},{e:"🚫",t:"Not really"}]},
+ {type:"list", q:"How's your energy been these past weeks?", sub:"Be honest, it shapes your ritual.", options:[{e:"🔋",t:"Full of energy"},{e:"🙂",t:"OK, with ups and downs"},{e:"😮‍💨",t:"Tired most of the day"},{e:"🪫",t:"Exhausted almost always"}]},
+ {type:"cards", q:"What's your age range?", options:[
+   {t:"18 to 25", img:"https://images.pexels.com/photos/13369166/pexels-photo-13369166.jpeg?auto=compress&cs=tinysrgb&w=400"},
+   {t:"26 to 35", img:"https://images.pexels.com/photos/3757654/pexels-photo-3757654.jpeg?auto=compress&cs=tinysrgb&w=400"},
+   {t:"36 to 45", img:"https://images.pexels.com/photos/6739123/pexels-photo-6739123.jpeg?auto=compress&cs=tinysrgb&w=400"},
+   {t:"46+", img:"https://images.pexels.com/photos/6787541/pexels-photo-6787541.jpeg?auto=compress&cs=tinysrgb&w=400"}
+ ]},
+ {type:"multi", q:"Check what describes you best today", sub:"You can select more than one.", options:[{e:"🎈",t:"Belly gets bloated throughout the day"},{e:"🐢",t:"Slow digestion / transit"},{e:"🍫",t:"Random sugar cravings"},{e:"😣",t:"Discomfort or cramps after eating"},{e:"🌀",t:"Water retention"},{e:"🧠",t:"Brain fog / trouble focusing"}], cta:"Continue"},
+ {type:"multi", q:"And about your routine, what applies?", sub:"Select as many as make sense.", options:[{e:"☕",t:"Skip meals or eat on the run"},{e:"🧂",t:"Eat a lot of processed food"},{e:"🌙",t:"Sleep less than 6h a night"},{e:"💧",t:"Drink little water daily"},{e:"🚶",t:"Sit most of the day"}], cta:"Continue"},
+ {type:"weightheight", q:"Just two more numbers to calibrate your ritual"},
+ {type:"info", body:`Did you know a lot of digestive discomfort is linked to microbiota balance — the bacteria living in your gut?<br><br>When that balance is thrown off by routine, sleep and food, the body tends to retain more fluid and feel heavier throughout the day.`, chart:true, options:[{e:"💡",t:"That makes sense to me"},{e:"🤔",t:"Never thought about it that way"}]},
+ {type:"compare", q:"Guided ritual vs. going at it alone", sub:"Which one has been your experience?",
+   rows:[
+     ["Hard to stay consistent without a plan","Daily step-by-step, easy to follow"],
+     ["Scattered, contradictory information","One single guide, straight to the point"],
+     ["Easy to give up in week one","Checklist to keep you on track"]
+   ],
+   options:[{e:"🙋",t:"I've tried alone and it didn't stick"},{e:"🌱",t:"Never tried a guided ritual"}]},
+ {type:"choice", q:"Would you follow a guided 7-day ritual to feel the difference?", options:[{e:"🤩",t:"Yes, very much!"},{e:"🙂",t:"Maybe, tell me more"}]},
+ {type:"cards4", q:"If it worked, how would you want to feel?", options:[{t:"Lighter, no more bloating"},{t:"More energy day to day"},{t:"Comfortable in my body again"},{t:"Routine finally under control"}]},
+ {type:"choice", q:"What time of day works best for 5 minutes on your ritual?", options:[{e:"🌅",t:"Morning, before heading out"},{e:"🌆",t:"Afternoon, during a break"},{e:"🌃",t:"Night, before bed"}]},
+ {type:"choice", q:"Do you buy into small daily adjustments changing things over time?", sub:"No magic promises, just consistency.", options:[{e:"🙌",t:"Absolutely"},{e:"😅",t:"I want to believe it"}]},
+ {type:"testimonials", q:"A quick look at people who tried the ritual", cta:"I want to see my result"},
+ {type:"loadingDiag"},
+ {type:"resultDiag"},
+ {type:"loadingProto"},
+ {type:"final"}
+];
+
+const TXT = {
+  weightLabel:"Current weight",
+  weightPh:"e.g. 150",
+  heightLabel:"Height",
+  heightPh:"e.g. 5'5\" / 165cm",
+  submit:"Calculate my ritual",
+  next:"Continue",
+  goodLabel:"Bellora Ritual",
+  badLabel:"Going it alone",
+  chartCaption:"Body heaviness sensation through the day, without a care routine",
+  loading1Title:"Crunching your answers",
+  loading1Sub:"One moment, building your overview...",
+  resultTitle:"Your Bellora overview 🌱",
+  resultSub:"Based on what you answered:",
+  resultMsg:"The pattern you described is common in routines with low water intake, irregular sleep and rushed meals — factors that tend to weigh on digestive comfort.",
+  stat1:"63%", stat1lbl:"Reported bloating by end of day",
+  stat2:"71%", stat2lbl:"Sleep less than 6h a night",
+  stat3:"84%", stat3lbl:"Noticed improvement after adjusting habits",
+  resultNote:"Illustrative estimates based on user reports. Not a medical diagnosis.",
+  resultCta:"Build my 7-day ritual",
+  loading2Title:"Building your personalized ritual",
+  loading2Sub:"Cross-checking age range, symptoms and routine...",
+  finalTitle:"Your ritual is ready! 🌿",
+  finalBody:"Next step: check out the full Bellora Ritual — the details page opens next.",
+  finalCta:"See my ritual now",
+  finalNote:"[LINK TO PRESENTATION PAGE / CHECKOUT]"
+};
+
+let stepIndex = 0;
+let history = [];
+
+function totalSteps(){ return STEPS.length; }
+function updateProgress(){
+  const pct = Math.min(96, Math.round(((stepIndex+1)/totalSteps())*100));
+  document.getElementById("progressBar").style.width = pct+"%";
+  document.getElementById("backBtn").classList.toggle("show", stepIndex>0);
+}
+function goBack(){ if(history.length){ stepIndex = history.pop(); render(); } }
+function goNext(){ history.push(stepIndex); stepIndex = Math.min(stepIndex+1, totalSteps()-1); render(); }
+
+function renderChart(){
+  const heights = [40,52,61,70,78,86,92];
+  let bars = heights.map(h=>`<div class="bar" style="height:${h}%"></div>`).join("");
+  return `<div class="chart"><div class="bars">${bars}</div><div class="chart-caption">${TXT.chartCaption}</div></div>`;
+}
+
+function render(){
+  const step = STEPS[stepIndex];
+  updateProgress();
+  const c = document.getElementById("stepContainer");
+  let html = "";
+
+  if(step.type==="choice" || step.type==="info"){
+    if(step.title){ html += `<h1 class="qtitle">${step.title}</h1>`; if(step.sub) html += `<p class="qsub">${step.sub}</p>`; }
+    if(step.q) html += `<h1 class="qtitle">${step.q}</h1>`;
+    if(step.sub && !step.title) html += `<p class="qsub">${step.sub}</p>`;
+    if(step.icon) html += `<div style="text-align:center;font-size:70px;margin-bottom:18px;">${step.icon}</div>`;
+    if(step.image) html += `<img class="qimage" src="${step.image}" alt="">`;
+    if(step.body) html += `<div class="info-block">${step.body}</div>`;
+    if(step.chart) html += renderChart();
+    html += `<div class="options">`;
+    step.options.forEach(o=>{ html += `<div class="opt" onclick="goNext()"><span class="emoji">${o.e||"➡️"}</span><span>${o.t}</span><span class="arrow">›</span></div>`; });
+    html += `</div>`;
+  }
+  else if(step.type==="cards"){
+    html += `<h1 class="qtitle">${step.q}</h1>`;
+    html += `<div class="grid2">`;
+    step.options.forEach(o=>{ html += `<div class="card" onclick="goNext()"><div class="imgbox">${o.img?`<img src="${o.img}" alt="">`:(o.e||"")}</div>${o.t}</div>`; });
+    html += `</div>`;
+  }
+  else if(step.type==="cards4"){
+    html += `<h1 class="qtitle">${step.q}</h1>`;
+    step.options.forEach(o=>{ html += `<div class="opt" onclick="goNext()"><span>${o.t}</span><span class="arrow">›</span></div>`; });
+  }
+  else if(step.type==="list"){
+    html += `<h1 class="qtitle">${step.q}</h1><p class="qsub">${step.sub||""}</p>`;
+    html += `<div class="options">`;
+    step.options.forEach(o=>{ html += `<div class="opt" onclick="goNext()"><span class="emoji">${o.e}</span><span>${o.t}</span><span class="arrow">›</span></div>`; });
+    html += `</div>`;
+  }
+  else if(step.type==="multi"){
+    html += `<h1 class="qtitle">${step.q}</h1><p class="qsub">${step.sub||""}</p>`;
+    html += `<div class="options">`;
+    step.options.forEach(o=>{ html += `<div class="opt checkbox" onclick="this.classList.toggle('selected')"><div class="box"></div><span class="emoji">${o.e}</span><span>${o.t}</span></div>`; });
+    html += `</div><button class="cta" onclick="goNext()">${step.cta||TXT.next}</button>`;
+  }
+  else if(step.type==="weightheight"){
+    html += `<h1 class="qtitle">${step.q}</h1>`;
+    html += `<div class="field-row"><div style="flex:1;"><p class="qsub" style="margin-bottom:8px;">${TXT.weightLabel}</p><input class="textfield" id="wInput" placeholder="${TXT.weightPh}"></div><div style="flex:1;"><p class="qsub" style="margin-bottom:8px;">${TXT.heightLabel}</p><input class="textfield" id="hInput" placeholder="${TXT.heightPh}"></div></div>`;
+    html += `<button class="cta" id="whCta" onclick="goNext()" disabled>${TXT.submit}</button>`;
+  }
+  else if(step.type==="compare"){
+    html += `<h1 class="qtitle">${step.q}</h1><p class="qsub">${step.sub||""}</p>`;
+    html += `<table class="cmp"><tr><th class="bad">${TXT.badLabel}</th><th class="good">${TXT.goodLabel}</th></tr>`;
+    step.rows.forEach(r=>{ html += `<tr><td class="bad">${r[0]}</td><td class="good">${r[1]}</td></tr>`; });
+    html += `</table>`;
+    html += `<div class="options">`;
+    step.options.forEach(o=>{ html += `<div class="opt" onclick="goNext()"><span class="emoji">${o.e}</span><span>${o.t}</span><span class="arrow">›</span></div>`; });
+    html += `</div>`;
+  }
+  else if(step.type==="testimonials"){
+    html += `<h1 class="qtitle">${step.q}</h1>`;
+    const testis = [
+      ["Rachel M.","I followed the ritual for 7 days and the biggest change was my energy in the afternoons."],
+      ["Devon A.","I liked how simple it was. It's not a diet, it's a routine — that's what made me stick with it."]
+    ];
+    testis.forEach(t=>{
+      html += `<div style="background:#0e2b27;border-radius:16px;padding:16px;margin-bottom:14px;color:#fff;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#5cc0ac,#12a696);display:flex;align-items:center;justify-content:center;font-weight:700;">${t[0][0]}</div>
+          <div><div style="font-weight:700;font-size:14px;">${t[0]}</div><div style="font-size:11px;color:#8fd;">testimonial</div></div>
+        </div>
+        <div style="background:#153e38;border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.5;">${t[1]}</div>
+      </div>`;
+    });
+    html += `<p class="small-note">Illustrative testimonials for demo purposes. Individual results vary.</p>`;
+    html += `<button class="cta" onclick="goNext()">${step.cta}</button>`;
+  }
+  else if(step.type==="loadingDiag"){
+    html += `<div class="step-loading"><div class="spinner"></div><h1 class="qtitle" style="font-size:19px;">${TXT.loading1Title}</h1><p class="qsub">${TXT.loading1Sub}</p><div class="loading-bar-outer"><div class="loading-bar-inner" id="loadBar1"></div></div></div>`;
+  }
+  else if(step.type==="resultDiag"){
+    html += `<h1 class="qtitle">${TXT.resultTitle}</h1><p class="qsub">${TXT.resultSub}</p>`;
+    html += `<div class="result-card"><div class="result-icon">🌿</div><div class="result-msg">${TXT.resultMsg}</div></div>`;
+    html += `<div class="stat-row">
+      <div class="stat"><span class="pct">${TXT.stat1}</span><div class="bar-mini"><i style="height:${TXT.stat1};background:#e8735f;"></i></div><span class="lbl">${TXT.stat1lbl}</span></div>
+      <div class="stat"><span class="pct">${TXT.stat2}</span><div class="bar-mini"><i style="height:${TXT.stat2};background:#e0a83c;"></i></div><span class="lbl">${TXT.stat2lbl}</span></div>
+      <div class="stat"><span class="pct">${TXT.stat3}</span><div class="bar-mini"><i style="height:${TXT.stat3};background:#12a696;"></i></div><span class="lbl">${TXT.stat3lbl}</span></div>
+    </div>`;
+    html += `<p class="small-note">${TXT.resultNote}</p>`;
+    html += `<button class="cta" onclick="goNext()">${TXT.resultCta}</button>`;
+  }
+  else if(step.type==="loadingProto"){
+    html += `<div class="step-loading"><div class="spinner"></div><h1 class="qtitle" style="font-size:19px;">${TXT.loading2Title}</h1><p class="qsub">${TXT.loading2Sub}</p><div class="loading-bar-outer"><div class="loading-bar-inner" id="loadBar2"></div></div></div>`;
+  }
+  else if(step.type==="final"){
+    html += `<h1 class="qtitle">${TXT.finalTitle}</h1>`;
+    html += `<div class="info-block">${TXT.finalBody}</div>`;
+    html += `<button class="cta" onclick="window.location.href='bellora-sales-en.html'">${TXT.finalCta}</button>`;
+    html += `<p class="small-note">${TXT.finalNote}</p>`;
+  }
+
+  c.innerHTML = html;
+
+  if(step.type==="weightheight"){
+    const w = document.getElementById("wInput");
+    const h = document.getElementById("hInput");
+    const btn = document.getElementById("whCta");
+    const check = ()=>{ btn.disabled = !(w.value.trim() && h.value.trim()); };
+    w.addEventListener("input", check);
+    h.addEventListener("input", check);
+  }
+  if(step.type==="loadingDiag"){ animateBar("loadBar1", goNext); }
+  if(step.type==="loadingProto"){ animateBar("loadBar2", goNext); }
+}
+
+function animateBar(id, done){
+  const el = document.getElementById(id);
+  let w = 0;
+  const t = setInterval(()=>{
+    w += Math.random()*18+8;
+    if(w>=100){ w=100; clearInterval(t); setTimeout(done, 400); }
+    el.style.width = w+"%";
+  }, 260);
+}
+
+render();
+</script>
+</body>
+</html>
